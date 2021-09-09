@@ -15,7 +15,7 @@ The experiments run on the UCL Cluster.
 
 ## Usage
 
-First install dependancies and login to wandb `pip install -r requirements.txt; wandb login <API_KEY>`. Then to run an experiment, run `python experiment_runner.py --config your_experiment.yaml`. For cluster experiments, see example submission script `run_experiments.sh`, and hyperparameter sweep `run_sweep.sh`. The experiment will output (logged to wandb):
+First install dependancies and login to wandb `pip install -r requirements.txt; wandb login <API_KEY>`. Then to run an experiment, run `python cluster_experiment_runner.py --config your_experiment.yaml`. For cluster experiments, see example submission script `run_experiments.sh`, and hyperparameter sweep `run_sweep.sh`. The experiment will output (logged to wandb):
 
 1. Accuracy, Precision, Recall and F1 scores as a function of dataset size for each data-set and each active learning strategy on test/train/dev averaged across num_repetitions with uncertainty bars
 2. Training curves on test/train/dev for each experiment run will be logged
