@@ -1,4 +1,4 @@
-# AL_benchmarks
+# al-benchmarks
 
 A repository for active learning benchmarks. This is specifically set up to evaluate the effect of model transfer where data acquired by one model is used to train another.
 
