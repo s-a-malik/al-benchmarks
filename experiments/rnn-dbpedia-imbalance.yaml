@@ -1,0 +1,137 @@
+# experiment config
+experiment: 
+  type: "classification"
+  log: true             # save wandb log
+  name: "rnn-dbpedia"           # experiment name for wandb group
+
+# dataset config
+dataset: 
+  name: "DBPedia"
+  seed_size: 50          # number of training examples to start with
+  seed_balance: "stratified"  # "balanced, imbalanced, stratified" - balanced is randomly selected, stratified is proportionate to the underlying pool (so can be imbalanced as well)
+  pool_balance: "imbalanced"  # "balanced, imbalanced"
+  dev_balance: "imbalanced" # "balanced, imbalanced"
+  imbalance_prop: 0.5   # only relevant if imbalanced
+  imbalance_cls: 0      # only relevant if imbalanced
+  seed: 123
+  val_prop: 0.2           # proportion of data to use for validation (randomly sampled)
+  debug: false             # reduced dataset size for debugging
+
+# acquisition model config
+acq_model:
+  model_type: "RNN"
+  model_hypers:
+    architecture:
+      pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+      max_length: 300           # max sequence length
+      fine_tune: false          # fine tune embeddings
+      hid_dim: 64         # size of RNN latent state
+      head_dim: 64        # size of hidden dimension on output head (not used)
+      num_layers: 1       # number of RNN layers
+      dropout: 0.2        
+    optim:
+      epochs: 200           # max number of epochs
+      lr: 0.001
+      batch_size: 16
+      optimizer: "adam"
+      scheduler: "constant"
+      warmup_steps: 0
+      loss: "CE"            # can change to unbiased estimators here?
+      L2_reg: 0.01          # weight decay
+      patience: 10           # early stopping
+      num_workers: 0        # number of dataloader workers
+      momentum: 0.9     # not used for adam
+      
+# evaluation model config
+eval_models:
+  - model_type: "logistic"      # logistic, MLP, RNN, or BERT
+    model_hypers:
+      architecture:
+        pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+        pooling_strat: "mean"     # pooling strategy for word embeddings ["mean", "max"]
+        max_length: 300           # max sequence length
+        fine_tune: false          # fine tune embeddings
+        dropout: 0.3
+      optim:
+        epochs: 200           # max number of epochs
+        lr: 0.001
+        batch_size: 16
+        optimizer: "adam"     # should change to SGD probs?
+        scheduler: "constant"
+        warmup_steps: 0
+        loss: "CE"            # can change to unbiased estimators here?
+        L2_reg: 1.0e-5          # weight decay
+        patience: 10           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+  - model_type: "MLP"      # logistic, MLP, RNN, or BERT
+    model_hypers:
+      architecture:
+        pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+        pooling_strat: "mean"     # pooling strategy for word embeddings ["mean", "max"]
+        max_length: 300           # max sequence length
+        hid_dims: [32]         # dimension of hidden states
+        dropout: 0.05
+        non_linearity: "ReLU"   # type of non-linearity in MLP hidden layers
+        fine_tune: false          # fine tune embeddings
+      optim:
+        epochs: 200           # max number of epochs
+        lr: 0.001
+        batch_size: 64
+        optimizer: "adam"     # should change to SGD probs?
+        scheduler: "constant"
+        warmup_steps: 0
+        loss: "CE"            # can change to unbiased estimators here?
+        L2_reg: 2.0e-6          # weight decay
+        patience: 10           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+  - model_type: "MLP"      # logistic, MLP, RNN, or BERT
+    model_hypers:
+      architecture:
+        pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+        pooling_strat: "mean"     # pooling strategy for word embeddings ["mean", "max"]
+        max_length: 300           # max sequence length
+        dropout: 0.13
+        hid_dims: [128, 128]         # dimension of hidden states
+        non_linearity: "ReLU"   # type of non-linearity in MLP hidden layers
+        fine_tune: false          # fine tune embeddings
+      optim:
+        epochs: 200           # max number of epochs
+        lr: 0.0005
+        batch_size: 64
+        optimizer: "adam"     # should change to SGD probs?
+        scheduler: "constant"
+        warmup_steps: 0
+        loss: "CE"            # can change to unbiased estimators here?
+        L2_reg: 1.0e-4          # weight decay
+        patience: 10           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+  - model_type: "BERT"
+    model_hypers:
+      architecture:
+        pretrained_model: "bert-base-uncased"
+        fine_tune: true
+        dropout: 0.2
+      optim:
+        epochs: 25           # max number of epochs
+        lr: 2.0e-5
+        batch_size: 8
+        optimizer: "adamw"
+        scheduler: "constant"
+        warmup_steps: 100     # scheduler warm up
+        loss: "CE"           # can change to unbiased estimators here?
+        L2_reg: 0.1          # weight decay
+        patience: 2           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+
+
+# query strategy config
+query_strategy:
+  query_type: "random"          
+  query_size: 50             # number of points to label per acquisition step
+  num_queries: 20            
+  num_subsample: 10000        # score only a select subsample
+  num_mc_iters: 20          # number of monte-carlo samples for dropout

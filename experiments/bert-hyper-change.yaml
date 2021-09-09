@@ -1,0 +1,104 @@
+# experiment config
+experiment: 
+  type: "classification"
+  log: true             # log to wandb or not
+  name: "bert-hypers-dbpedia-0708"           # experiment name for wandb group
+
+# dataset config
+dataset: 
+  name: "DBPedia"
+  seed_size: 50          # number of training examples to start with
+  seed_balance: "balanced"
+  pool_balance: "balanced"
+  dev_balance: "balanced"
+  # imbalance_prop: 0.2
+  # imbalance_cls: 0
+  seed: 123
+  val_prop: 0.2           # proportion of data to use for validation (randomly sampled)
+  debug: false             # reduced dataset size for debugging
+
+# acquisition model config
+acq_model:
+  model_type: "BERT"
+  model_hypers:
+    architecture:
+      pretrained_model: "bert-base-uncased"
+      fine_tune: true
+      dropout: 0.2
+    optim:
+      epochs: 25           # max number of epochs
+      lr: 2.0e-5
+      batch_size: 8
+      optimizer: "adamw"
+      scheduler: "constant"
+      warmup_steps: 100     # scheduler warm up
+      loss: "CE"           # can change to unbiased estimators here?
+      L2_reg: 0.1          # weight decay
+      patience: 2           # early stopping
+      num_workers: 0        # number of dataloader workers
+      momentum: 0.9     # not used for adam
+      
+# evaluation model config
+eval_models:
+  - model_type: "BERT"
+    model_hypers:
+      architecture:
+        pretrained_model: "bert-base-uncased"
+        fine_tune: true
+        dropout: 0.2
+      optim:
+        epochs: 25           # max number of epochs
+        lr: 5.0e-5
+        batch_size: 8
+        optimizer: "adamw"
+        scheduler: "constant"
+        warmup_steps: 100     # scheduler warm up
+        loss: "CE"           # can change to unbiased estimators here?
+        L2_reg: 0.1          # weight decay
+        patience: 2           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+  - model_type: "BERT"
+    model_hypers:
+      architecture:
+        pretrained_model: "bert-base-uncased"
+        fine_tune: true
+        dropout: 0.2
+      optim:
+        epochs: 25           # max number of epochs
+        lr: 2.0e-5
+        batch_size: 4
+        optimizer: "adamw"
+        scheduler: "constant"
+        warmup_steps: 100     # scheduler warm up
+        loss: "CE"           # can change to unbiased estimators here?
+        L2_reg: 0.1          # weight decay
+        patience: 2           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+  - model_type: "BERT"
+    model_hypers:
+      architecture:
+        pretrained_model: "bert-base-uncased"
+        fine_tune: true
+        dropout: 0.2
+      optim:
+        epochs: 25           # max number of epochs
+        lr: 2.0e-5
+        batch_size: 8
+        optimizer: "adamw"
+        scheduler: "constant"
+        warmup_steps: 10     # scheduler warm up
+        loss: "CE"           # can change to unbiased estimators here?
+        L2_reg: 0.3          # weight decay
+        patience: 2           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+
+# query strategy config
+query_strategy:
+  query_type: "random"          
+  query_size: 50             # number of points to label per acquisition step
+  num_queries: 20            
+  num_subsample: 10000        # score only a select subsample
+  num_mc_iters: 20          # number of monte-carlo samples for dropout

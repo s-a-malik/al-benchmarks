@@ -1,0 +1,118 @@
+# experiment config
+experiment: 
+  type: "classification"
+  log: true              # save to wandb or not
+  num_repetitions: 3       # number of runs to average over
+  name: "debug"           # experiment name for wandb group
+
+# dataset config
+dataset: 
+  name: "AGNews"
+  seed_size: 20
+  seed_balance: "balanced"
+  pool_balance: "balanced"
+  dev_balance: "balanced"
+  # imbalance_prop: 0.2
+  # imbalance_cls: 0
+  seed: 123
+  val_prop: 0.1
+  debug: true             # reduced dataset size for debugging
+
+acq_model:
+  model_type: "logistic"      # logistic, MLP, RNN, or BERT
+  model_hypers:
+    architecture:
+      pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+      pooling_strat: "mean"     # pooling strategy for word embeddings ["mean", "max"]
+      max_length: 300           # max sequence length
+      fine_tune: false          # fine tune embeddings
+    optim:
+      epochs: 10           # max number of epochs
+      lr: 0.001
+      batch_size: 16
+      optimizer: "adam"     # should change to SGD probs?
+      scheduler: "constant"
+      warmup_steps: 0
+      loss: "CE"            # can change to unbiased estimators here?
+      L2_reg: 0.01          # weight decay
+      patience: 10           # early stopping
+      num_workers: 0        # number of dataloader workers
+      momentum: 0.9     # not used for adam
+      
+# evaluation model config
+eval_models:
+  - model_type: "MLP"      # logistic, MLP, RNN, or BERT
+    model_hypers:
+      architecture:
+        pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+        pooling_strat: "mean"     # pooling strategy for word embeddings ["mean", "max"]
+        max_length: 300           # max sequence length
+        hid_dims: [64]         # dimension of hidden states
+        non_linearity: "ReLU"   # type of non-linearity in MLP hidden layers
+        fine_tune: false          # fine tune embeddings
+      optim:
+        epochs: 10           # max number of epochs
+        lr: 0.001
+        batch_size: 16
+        optimizer: "adam"     # should change to SGD probs?
+        scheduler: "constant"
+        warmup_steps: 0
+        loss: "CE"            # can change to unbiased estimators here?
+        L2_reg: 0.01          # weight decay
+        patience: 10           # early stopping
+        num_workers: 0        # number of dataloader workers
+        momentum: 0.9     # not used for adam
+  # - model_type: "RNN"
+  #   model_hypers:
+  #     architecture:
+  #       pretrained_emb: "glove"    # pretrained word embeddings: ["glove", "word2vec"]
+  #       max_length: 300           # max sequence length
+  #       fine_tune: false          # fine tune embeddings
+  #       hid_dim: 64         # size of RNN latent state
+  #       head_dim: 64        # size of hidden dimension on output head
+  #       num_layers: 1       # number of RNN layers
+  #       dropout: 0.2        
+  #     optim:
+  #       epochs: 200           # max number of epochs
+  #       lr: 0.001
+  #       batch_size: 16
+  #       optimizer: "adam"
+  #       scheduler: "constant"
+  #       warmup_steps: 0
+  #       loss: "CE"            # can change to unbiased estimators here?
+  #       L2_reg: 0.01          # weight decay
+  #       patience: 10           # early stopping
+  #       num_workers: 0        # number of dataloader workers
+  #       momentum: 0.9     # not used for adam
+  # - model_type: "BERT"
+  #   model_hypers:
+  #     architecture:
+  #       pretrained_model: "bert-base-uncased"
+  #       fine_tune: true
+  #       dropout: 0.2
+  #     optim:
+  #       epochs: 5           # max number of epochs
+  #       lr: 2.0e-5
+  #       batch_size: 8
+  #       optimizer: "adamw"
+  #       scheduler: "linear_warm_up"
+  #       warmup_steps: 10
+  #       loss: "CE"            # can change to unbiased estimators here?
+  #       L2_reg: 0.005          # weight decay
+  #       patience: 5           # early stopping
+  #       num_workers: 0        # number of dataloader workers
+  #       momentum: 0.9     # not used for adam
+
+
+# query strategy config
+query_strategy:
+  query_type: "entropy"      # entropy, lc, margin, bald, batchbald, coreset
+  query_size: 10             # number of points to label per acquisition step
+  num_queries: 5            # if 0 then continue until all pool is labelled
+  num_subsample: 50        # score only a select subsample
+  num_mc_iters: 20          # number of monte-carlo samples for dropout
+
+# ray config
+
+
+# BERT

@@ -1,0 +1,4 @@
+# Run multiple experiments on cluster
+# each line beginning with - is an experiment.
+--config experiments/debug-cluster.yaml
+--config experiments/debug-cluster.yaml

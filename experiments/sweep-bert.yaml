@@ -1,0 +1,59 @@
+program: cluster_experiment_runner.py
+entity: ucl-msc-al-benchmarks
+project: al-benchmarks
+name: bert-hyper-tune
+
+method: random    # bayes
+metric:
+  goal: minimize
+  name: acq_model/val_loss
+
+parameters:
+  # optim
+  batch_size:
+    values: [2, 4, 8, 16]
+  lr:
+    # log uniform requires min and max to be exponential powers i.e. searches between exp(min) and exp(max)
+    distribution: log_uniform
+    min: -13.8
+    max: -6.9
+
+  L2_reg:
+    distribution: log_uniform
+    min: -13.8
+    max: -0.693
+  
+  # architecture
+  dropout:
+    distribution: uniform
+    min: 0.0
+    max: 0.8
+  # fine_tune:
+  #   values: ["true", "false"]
+# for BERT
+  scheduler:
+    values: ["constant", "linear_warm_up", "constant_warm_up"]
+  warmup_steps:
+    distribution: q_uniform
+    min: 0
+    max: 500
+  optimizer:
+    values: ["adam", "adamw"] #, "SGD"]
+  # momentum:
+  #   min: 0.7
+  #   max: 0.99
+
+# early_terminate:
+#   type: hyperband
+#   s: 2
+#   eta: 3
+#   max_iter: 27
+
+# do not include environment as already given by shell script
+command:
+  - python3
+  - "-u"
+  - ${program}
+  - "--config"
+  - "experiments/hyper-tune-config.yaml"
+  - ${args}   # this is all the parameters in the sweep config
