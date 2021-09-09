@@ -10,7 +10,6 @@ We can compare how active learning performs for:
 * Different active learning strategies
 * Different datasets
 * Different model types and hyperparameters
-* Different task types (classification, sequence modelling, etc)
 
 The experiments run on the UCL Cluster.
 
